@@ -1,0 +1,10 @@
+data/brain_observatory_manifest.json
+data/dff.json
+data/experiment_containers.json
+data/mip.json
+data/ophys_experiment_data/
+data/ophys_experiments.json
+data/rois.json
+data/stim_epoch.json
+
+venv*
