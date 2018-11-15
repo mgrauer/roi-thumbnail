@@ -1,17 +1,23 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <ROIPlot v-bind:width="width" v-bind:height="height" v-bind:rois="rois" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import ROIPlot from './components/ROIPlot/'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    ROIPlot
+  },
+  data () {
+    return {
+      width: 512,
+      height: 512,
+      rois: [2, 3, 4, 5]
+    };
   }
 }
 </script>
