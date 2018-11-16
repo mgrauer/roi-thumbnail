@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <ROIPlot v-bind:width="width" v-bind:height="height" v-bind:rois="rois" />
+    <ROIPlot />
   </div>
 </template>
 
@@ -11,13 +11,6 @@ export default {
   name: 'app',
   components: {
     ROIPlot
-  },
-  data () {
-    return {
-      width: 512,
-      height: 512,
-      rois: [2, 3, 4, 5]
-    };
   }
 }
 </script>
