@@ -31,12 +31,12 @@ export default {
       }
     }
 
-    for (let i = 0; i < 3; i++) {
-      console.log(this.rois[i].length);
+    const rois = this.rois;
 
-      for (let j = 0; j < this.rois[i].length; j++) {
-        const x = this.rois[i][j][0];
-        const y = this.rois[i][j][1];
+    for (let i = 0; i < rois.length; i++) {
+      for (let j = 0; j < rois[i].length; j++) {
+        const x = rois[i][j][0];
+        const y = rois[i][j][1];
         const idx = x * this.width + y;
 
         img.data[4 * idx + 1] = 255;
