@@ -40,8 +40,8 @@ async function main () {
   });
 
   // Grab the ROIs and Dff data parallel-asynchronously.
-  const roisReq = json('rois.json');
-  const dffReq = json('dff.json');
+  const roisReq = json('data/rois.json');
+  const dffReq = json('data/dff.json');
   const [rois, dff] = [await roisReq, await dffReq];
 
   store.commit('setROISize', {
