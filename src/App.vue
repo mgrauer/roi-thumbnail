@@ -1,15 +1,18 @@
 <template>
   <div id="app">
+    <DffPlot />
     <ROIPlot />
   </div>
 </template>
 
 <script>
-import ROIPlot from './components/ROIPlot/'
+import DffPlot from '@/components/DffPlot';
+import ROIPlot from '@/components/ROIPlot'
 
 export default {
   name: 'app',
   components: {
+    DffPlot,
     ROIPlot
   }
 }

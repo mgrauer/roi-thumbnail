@@ -1,3 +1,5 @@
+import CanvasImage from './CanvasImage';
+
 export default {
   name: 'ROIPlot',
   computed: {
@@ -10,39 +12,72 @@ export default {
     },
 
     rois () {
-      return this.$store.state.data;
+      return this.$store.state.rois;
+    },
+
+    focus () {
+      return this.$store.state.focus;
+    }
+  },
+  watch: {
+    focus: function (newFocus, oldFocus) {
+      if (oldFocus !== null) {
+        this.drawROI(oldFocus, {
+          r: 100,
+          g: 100,
+          b: 100
+        });
+      }
+
+      this.drawROI(newFocus, {
+        r: 0,
+        g: 255,
+        b: 0
+      });
+
+      this.img.update();
     }
   },
   mounted () {
     const el = this.$el;
     const canvas = el.getElementsByTagName('canvas')[0];
 
-    const ctx = canvas.getContext('2d');
+    this.img = new CanvasImage(canvas, {
+      width: this.width,
+      height: this.height
+    });
 
-    const img = ctx.createImageData(this.width, this.height);
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        const idx = i * this.width + j;
-
-        img.data[4 * idx + 0] = 0;
-        img.data[4 * idx + 1] = 0;
-        img.data[4 * idx + 2] = 0;
-        img.data[4 * idx + 3] = 255;
-      }
-    }
+    this.img.clear(0, 0, 0, 255);
 
     const rois = this.rois;
-
     for (let i = 0; i < rois.length; i++) {
-      for (let j = 0; j < rois[i].length; j++) {
-        const x = rois[i][j][0];
-        const y = rois[i][j][1];
-        const idx = x * this.width + y;
-
-        img.data[4 * idx + 1] = 255;
-      }
+      const color = {
+        r: 100,
+        g: 100,
+        b: 100
+      };
+      this.drawROI(i, color, false);
     }
 
-    ctx.putImageData(img, 0, 0);
+    this.img.update();
+  },
+
+  methods: {
+    drawROI (which, color, update) {
+      const rois = this.rois;
+      for (let j = 0; j < rois[which].length; j++) {
+        this.img.setPixel(rois[which][j][0], rois[which][j][1], {
+          r: color.r,
+          g: color.g,
+          b: color.b,
+          a: color.a,
+          update: false
+        });
+      }
+
+      if (update) {
+        this.img.update();
+      }
+    }
   }
 }
