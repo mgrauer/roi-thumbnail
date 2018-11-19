@@ -7,6 +7,8 @@ data/ophys_experiments.json
 data/rois.json
 data/stim_epoch.json
 
+public/data
+
 venv*
 
 .DS_Store
