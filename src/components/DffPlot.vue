@@ -40,7 +40,7 @@ export default {
 
     const y = scaleLinear()
       .domain([range[0], range[1]])
-      .range([3 * 512 / 50, 0]);
+      .range([512 / 50, -512 / 50]);
 
     // Create a d3 line generator.
     const line = d3line()
@@ -51,12 +51,35 @@ export default {
     const svg = select(this.$el)
       .select('svg');
 
-    svg.selectAll('g')
+    const groups = svg.selectAll('g')
       .data(data)
       .enter()
       .append('g')
       .attr('transform', (d, i) => `translate(0, ${i * 512 / 50})`)
-      .selectAll('path')
+      .on('mouseover', function () {
+        select(this)
+          .select('path')
+          .attr('stroke', 'green')
+          .attr('stroke-width', 3);
+      })
+      .on('mouseleave', function () {
+        select(this)
+          .select('path')
+          .attr('stroke', 'black')
+          .attr('stroke-width', 1.5);
+      });
+
+    groups.append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', 512)
+      .attr('height', 512 / 50)
+      .attr('stroke', 'none')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'fill');
+
+    groups.selectAll('path')
       .data(d => [d])
       .enter()
       .append('path')
