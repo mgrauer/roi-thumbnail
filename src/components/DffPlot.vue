@@ -51,16 +51,19 @@ export default {
     const svg = select(this.$el)
       .select('svg');
 
+    const that = this;
     const groups = svg.selectAll('g')
       .data(data)
       .enter()
       .append('g')
       .attr('transform', (d, i) => `translate(0, ${i * 512 / 50})`)
-      .on('mouseover', function () {
+      .on('mouseover', function (d, i) {
         select(this)
           .select('path')
           .attr('stroke', 'green')
           .attr('stroke-width', 3);
+
+        that.$store.commit('focus', i);
       })
       .on('mouseleave', function () {
         select(this)

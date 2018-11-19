@@ -20,7 +20,8 @@ async function main () {
         height: 0
       },
       rois: [],
-      dff: []
+      dff: [],
+      focus: null
     },
     mutations: {
       setData (state, { which, data }) {
@@ -30,6 +31,10 @@ async function main () {
       setROISize (state, dim) {
         state.roiPlot.width = dim.width;
         state.roiPlot.height = dim.height;
+      },
+
+      focus (state, which) {
+        state.focus = which;
       }
     }
   });
