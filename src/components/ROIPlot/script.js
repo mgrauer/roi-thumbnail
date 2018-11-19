@@ -49,7 +49,8 @@ export default {
 
     this.img.clear(0, 0, 0, 255);
 
-    for (let i = 0; i < 50; i++) {
+    const rois = this.rois;
+    for (let i = 0; i < rois.length; i++) {
       const color = {
         r: 100,
         g: 100,
