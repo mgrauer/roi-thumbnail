@@ -12,7 +12,7 @@ export default {
     },
 
     rois () {
-      return this.$store.state.data;
+      return this.$store.state.rois;
     }
   },
   mounted () {

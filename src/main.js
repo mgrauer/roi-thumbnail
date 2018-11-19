@@ -19,11 +19,12 @@ async function main () {
         width: 0,
         height: 0
       },
-      data: []
+      rois: [],
+      dff: []
     },
     mutations: {
-      setData (state, data) {
-        state.data = data;
+      setData (state, { which, data }) {
+        state[which] = data;
       },
 
       setROISize (state, dim) {
@@ -33,14 +34,25 @@ async function main () {
     }
   });
 
-  const rois = await json('rois.json');
+  // Grab the ROIs and Dff data parallel-asynchronously.
+  const roisReq = json('rois.json');
+  const dffReq = json('dff.json');
+  const [rois, dff] = [await roisReq, await dffReq];
 
   store.commit('setROISize', {
     width: 512,
     height: 512
   });
 
-  store.commit('setData', rois);
+  store.commit('setData', {
+    which: 'rois',
+    data: rois
+  });
+
+  store.commit('setData', {
+    which: 'dff',
+    data: dff
+  });
 
   new Vue({
     store,
