@@ -2,6 +2,15 @@
   <div id="app">
     <DffPlot />
     <ROIPlot />
+
+    <input type="radio" id="selection" value="selection" v-model="mode">
+    <label for="selection">Selection Mode</label>
+    <br>
+    <input type="radio" id="time" value="time" v-model="mode">
+    <label for="time">Time Mode</label>
+    <br>
+    <span> {{ mode }} </span>
+
   </div>
 </template>
 
@@ -14,6 +23,16 @@ export default {
   components: {
     DffPlot,
     ROIPlot
+  },
+  watch: {
+    mode: function (mode) {
+      console.log(mode);
+    }
+  },
+  data () {
+    return {
+      mode: 'selection'
+    };
   }
 }
 </script>
