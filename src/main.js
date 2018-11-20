@@ -21,6 +21,7 @@ async function main () {
       },
       rois: [],
       dff: [],
+      epochs: [],
       focus: null
     },
     mutations: {
@@ -42,7 +43,8 @@ async function main () {
   // Grab the ROIs and Dff data parallel-asynchronously.
   const roisReq = json('data/rois.json');
   const dffReq = json('data/dff.json');
-  const [rois, dff] = [await roisReq, await dffReq];
+  const epochReq = json('data/stim_epoch.json');
+  const [rois, dff, epochs] = [await roisReq, await dffReq, await epochReq];
 
   store.commit('setROISize', {
     width: 512,
@@ -57,6 +59,11 @@ async function main () {
   store.commit('setData', {
     which: 'dff',
     data: dff
+  });
+
+  store.commit('setData', {
+    which: 'epochs',
+    data: epochs
   });
 
   new Vue({
