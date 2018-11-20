@@ -103,7 +103,7 @@ loop:
           }
         }
 
-        this.$store.commit('focus', i < 174 ? i : null);
+        this.$store.commit('focus', i < 50 ? i : null);
       }, 0);
     }
   }
