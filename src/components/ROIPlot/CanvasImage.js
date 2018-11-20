@@ -22,7 +22,7 @@ export default class CanvasImage {
   }
 
   setPixel (i, j, {r, g, b, a, update = true}) {
-    const idx = i * this.width + j;
+    const idx = j * this.width + i;
 
     if (r !== undefined) {
       this.img.data[4 * idx + 0] = r;
