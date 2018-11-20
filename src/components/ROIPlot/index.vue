@@ -36,11 +36,13 @@ export default {
         });
       }
 
-      this.drawROI(newFocus, {
-        r: 0,
-        g: 255,
-        b: 0
-      });
+      if (newFocus !== null) {
+        this.drawROI(newFocus, {
+          r: 0,
+          g: 255,
+          b: 0
+        });
+      }
 
       this.img.update();
     }
@@ -105,10 +107,7 @@ loop:
           }
         }
 
-        if (i < 174) {
-          this.drawROI(i, {r: 255}, true);
-        }
-
+        this.$store.commit('focus', i < 174 ? i : null);
       }, 0);
     }
   }

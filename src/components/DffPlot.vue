@@ -26,6 +26,26 @@ export default {
   computed: {
     dff () {
       return this.$store.state.dff;
+    },
+    focus () {
+      return this.$store.state.focus;
+    }
+  },
+  watch: {
+    focus (focus) {
+      select(this.$el)
+        .selectAll('path')
+        .each(function (d, i) {
+          if (i === focus) {
+            select(this)
+              .attr('stroke', 'green')
+              .attr('stroke-width', 3);
+          } else {
+            select(this)
+              .attr('stroke', 'black')
+              .attr('stroke-width', 1.5);
+          }
+        });
     }
   },
   mounted () {
@@ -58,18 +78,7 @@ export default {
       .append('g')
       .attr('transform', (d, i) => `translate(0, ${i * 512 / 50})`)
       .on('mouseover', function (d, i) {
-        select(this)
-          .select('path')
-          .attr('stroke', 'green')
-          .attr('stroke-width', 3);
-
         that.$store.commit('focus', i);
-      })
-      .on('mouseleave', function () {
-        select(this)
-          .select('path')
-          .attr('stroke', 'black')
-          .attr('stroke-width', 1.5);
       });
 
     groups.append('rect')
