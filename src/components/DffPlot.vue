@@ -6,7 +6,8 @@
 
 <script>
 import { select } from 'd3-selection';
-import { scaleLinear } from 'd3-scale';
+import { scaleLinear, scaleOrdinal } from 'd3-scale';
+import { schemePastel1 } from 'd3-scale-chromatic';
 import { line as d3line } from 'd3-shape';
 
 // Compute the range of all Dff values.
@@ -91,6 +92,7 @@ export default {
 
     // Place rects behind the plots to show the epochs.
     const epochs = this.epochs;
+    const epochColormap = scaleOrdinal(schemePastel1);
     svg.append('g')
       .classed('epochs', true)
       .selectAll('rect')
@@ -101,7 +103,7 @@ export default {
       .attr('y', 0)
       .attr('width', d => x(d.end) - x(d.start))
       .attr('height', 512)
-      .attr('fill', (d, i) => i % 2 === 0 ? 'purple' : 'green');
+      .attr('fill', d => epochColormap(d.stimulus));
 
     // Construct a series of g elements for holding each plot.
     const that = this;
