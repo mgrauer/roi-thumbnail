@@ -6,7 +6,8 @@
 
 <script>
 import { select } from 'd3-selection';
-import { scaleLinear } from 'd3-scale';
+import { scaleLinear, scaleOrdinal } from 'd3-scale';
+import { schemePastel1 } from 'd3-scale-chromatic';
 import { line as d3line } from 'd3-shape';
 
 // Compute the range of all Dff values.
@@ -29,6 +30,25 @@ export default {
     },
     focus () {
       return this.$store.state.focus;
+    },
+    epochs () {
+      const raw = this.$store.state.epochs;
+      let data = [];
+      for (let idx in Object.keys(raw.stimulus)) {
+        data.push({
+          stimulus: raw.stimulus[idx],
+          start: raw.start[idx],
+          end: raw.end[idx]
+        });
+      }
+
+      const scale = this.dff[0].length / data[data.length - 1].end;
+      for (let i = 0; i < data.length; i++) {
+        data[i].start *= scale;
+        data[i].end *= scale;
+      }
+
+      return data;
     }
   },
   watch: {
@@ -67,20 +87,37 @@ export default {
       .x((d, i) => x(i))
       .y(y);
 
-    // Construct a series of g elements for holding each plot.
     const svg = select(this.$el)
       .select('svg');
 
+    // Place rects behind the plots to show the epochs.
+    const epochs = this.epochs;
+    const epochColormap = scaleOrdinal(schemePastel1);
+    svg.append('g')
+      .classed('epochs', true)
+      .selectAll('rect')
+      .data(epochs)
+      .enter()
+      .append('rect')
+      .attr('x', d => x(d.start))
+      .attr('y', 0)
+      .attr('width', d => x(d.end) - x(d.start))
+      .attr('height', 512)
+      .attr('fill', d => epochColormap(d.stimulus));
+
+    // Construct a series of g elements for holding each plot.
     const that = this;
-    const groups = svg.selectAll('g')
+    const groups = svg.selectAll('g.dff')
       .data(data)
       .enter()
       .append('g')
+      .classed('dff', true)
       .attr('transform', (d, i) => `translate(0, ${i * 512 / 50})`)
       .on('mouseover', function (d, i) {
         that.$store.commit('focus', i);
       });
 
+    // Create mouse target elements for interaction.
     groups.append('rect')
       .attr('x', 0)
       .attr('y', 0)
@@ -91,6 +128,7 @@ export default {
       .attr('fill', 'none')
       .attr('pointer-events', 'fill');
 
+    // Plot the data.
     groups.selectAll('path')
       .data(d => [d])
       .enter()
