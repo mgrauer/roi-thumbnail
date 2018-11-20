@@ -60,11 +60,7 @@ export default {
 
     const rois = this.rois;
     for (let i = 0; i < rois.length; i++) {
-      const color = {
-        r: 100,
-        g: 100,
-        b: 100
-      };
+      const color = i < 50 ? { r: 100, g: 100, b: 100 } : { r: 50, g: 50, b: 50 };
       this.drawROI(i, color, false);
     }
 
