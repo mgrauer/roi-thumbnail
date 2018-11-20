@@ -1,6 +1,6 @@
 <template>
   <div style="float:left;">
-    <canvas v-bind:width="width" v-bind:height="height"></canvas>
+    <canvas v-bind:width="width" v-bind:height="height" v-on:click="click"></canvas>
   </div>
 </template>
 
@@ -85,6 +85,31 @@ export default {
       if (update) {
         this.img.update();
       }
+    },
+
+    click () {
+      // Time out here to give canvas element a chance to pick up the mouse
+      // click and record its coordinates.
+      window.setTimeout(() => {
+        const mouse = this.img.click;
+
+        // Find a match.
+        const rois = this.rois;
+        let i;
+loop:
+        for (i = 0; i < rois.length; i++) {
+          for (let j = 0; j < rois[i].length; j++) {
+            if (rois[i][j][0] === mouse.x && rois[i][j][1] === mouse.y) {
+              break loop;
+            }
+          }
+        }
+
+        if (i < 174) {
+          this.drawROI(i, {r: 255}, true);
+        }
+
+      }, 0);
     }
   }
 }
