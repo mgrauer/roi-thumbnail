@@ -1,3 +1,5 @@
+import { select } from 'd3-selection';
+
 export default class CanvasImage {
   constructor (el, {width, height}) {
     this.el = el;
@@ -7,6 +9,15 @@ export default class CanvasImage {
     this.ctx = this.el.getContext('2d');
 
     this.img = this.ctx.createImageData(this.width, this.height);
+
+    select(this.el)
+      .on('click', () => {
+        const rect = event.target.getBoundingClientRect();
+        this.click = {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top
+        }
+      });
   }
 
   clear (r, g, b, a, { update = true } = {}) {
@@ -22,7 +33,7 @@ export default class CanvasImage {
   }
 
   setPixel (i, j, {r, g, b, a, update = true}) {
-    const idx = i * this.width + j;
+    const idx = j * this.width + i;
 
     if (r !== undefined) {
       this.img.data[4 * idx + 0] = r;

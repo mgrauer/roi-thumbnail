@@ -1,6 +1,6 @@
 <template>
   <div style="float:left;">
-    <canvas v-bind:width="width" v-bind:height="height"></canvas>
+    <canvas v-bind:width="width" v-bind:height="height" v-on:click="click"></canvas>
   </div>
 </template>
 
@@ -36,11 +36,13 @@ export default {
         });
       }
 
-      this.drawROI(newFocus, {
-        r: 0,
-        g: 255,
-        b: 0
-      });
+      if (newFocus !== null) {
+        this.drawROI(newFocus, {
+          r: 0,
+          g: 255,
+          b: 0
+        });
+      }
 
       this.img.update();
     }
@@ -58,11 +60,7 @@ export default {
 
     const rois = this.rois;
     for (let i = 0; i < rois.length; i++) {
-      const color = {
-        r: 100,
-        g: 100,
-        b: 100
-      };
+      const color = i < 50 ? { r: 100, g: 100, b: 100 } : { r: 50, g: 50, b: 50 };
       this.drawROI(i, color, false);
     }
 
@@ -85,6 +83,28 @@ export default {
       if (update) {
         this.img.update();
       }
+    },
+
+    click () {
+      // Time out here to give canvas element a chance to pick up the mouse
+      // click and record its coordinates.
+      window.setTimeout(() => {
+        const mouse = this.img.click;
+
+        // Find a match.
+        const rois = this.rois;
+        let i;
+loop:
+        for (i = 0; i < rois.length; i++) {
+          for (let j = 0; j < rois[i].length; j++) {
+            if (rois[i][j][0] === mouse.x && rois[i][j][1] === mouse.y) {
+              break loop;
+            }
+          }
+        }
+
+        this.$store.commit('focus', i < 50 ? i : null);
+      }, 0);
     }
   }
 }
