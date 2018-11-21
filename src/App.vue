@@ -2,6 +2,19 @@
   <div id="app">
     <DffPlot />
     <ROIPlot />
+
+    <input type="radio" id="selection" value="selection" v-model="mode">
+    <label for="selection">Selection Mode</label>
+    <br>
+    <input type="radio" id="time" value="time" v-model="mode">
+    <label for="time">Time Mode</label>
+    <br>
+    <div v-if="mode === 'time'">
+      <input type="range" id="timeindex" min="0" max="2001" v-model="timeIndex">
+      <br>
+      <span>Time index: {{ Math.floor(timeIndex * 56.8025987006) }}</span>
+    </div>
+
   </div>
 </template>
 
@@ -14,6 +27,21 @@ export default {
   components: {
     DffPlot,
     ROIPlot
+  },
+  watch: {
+    mode: function (mode) {
+      this.$store.commit('mode', mode);
+    },
+
+    timeIndex (val) {
+      this.$store.commit('timeIndex', val);
+    }
+  },
+  data () {
+    return {
+      mode: 'selection',
+      timeIndex: 0
+    };
   }
 }
 </script>

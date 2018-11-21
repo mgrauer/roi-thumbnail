@@ -5,22 +5,12 @@
 </template>
 
 <script>
+import { minmax } from '@/util';
+
 import { select } from 'd3-selection';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemePastel1 } from 'd3-scale-chromatic';
 import { line as d3line } from 'd3-shape';
-
-// Compute the range of all Dff values.
-function minmax (data) {
-  // First compute the min/max of each sequence.
-  const minmaxes = data.map(d => [Math.min.apply(null, d), Math.max.apply(null, d)]);
-
-  // Then get the min-min and the max-max.
-  return [
-    Math.min.apply(null, minmaxes.map(d => d[0])),
-    Math.max.apply(null, minmaxes.map(d => d[1]))
-  ];
-}
 
 export default {
   name: 'DffPlot',
@@ -49,10 +39,54 @@ export default {
       }
 
       return data;
+    },
+    mode () {
+      return this.$store.state.mode;
+    },
+    timeIndex () {
+      return this.$store.state.timeIndex;
     }
   },
   watch: {
     focus (focus) {
+      this.setFocus(focus);
+    },
+
+    mode (mode) {
+      if (mode === 'selection') {
+        // Hide the time index and highlight whatever trace is currently focused.
+        this.hideTimeIndex();
+        this.setFocus(this.focus);
+      } else {
+        // Show the time index and turn off trace highlighting.
+        this.showTimeIndex();
+        this.setFocus(null);
+      }
+    },
+
+    timeIndex (idx) {
+      this.moveTimeIndex(idx);
+    }
+  },
+  methods: {
+    hideTimeIndex () {
+      select(this.$el)
+        .select('line.time-index')
+        .style('opacity', 0);
+    },
+    showTimeIndex () {
+      select(this.$el)
+        .select('line.time-index')
+        .style('opacity', 1);
+    },
+    moveTimeIndex (idx) {
+      const x = this.x(idx);
+      select(this.$el)
+        .select('line.time-index')
+        .attr('x1', x)
+        .attr('x2', x);
+    },
+    setFocus (focus) {
       select(this.$el)
         .selectAll('path')
         .each(function (d, i) {
@@ -74,7 +108,7 @@ export default {
     const range = minmax(data);
 
     // Create scales for ploting the line charts.
-    const x = scaleLinear()
+    const x = this.x = scaleLinear()
       .domain([0, data[0].length])
       .range([0, 512]);
 
@@ -114,7 +148,9 @@ export default {
       .classed('dff', true)
       .attr('transform', (d, i) => `translate(0, ${i * 512 / 50})`)
       .on('mouseover', function (d, i) {
-        that.$store.commit('focus', i);
+        if (that.mode === 'selection') {
+          that.$store.commit('focus', i);
+        }
       });
 
     // Create mouse target elements for interaction.
@@ -137,6 +173,17 @@ export default {
       .attr('stroke-width', 1.5)
       .attr('fill', 'none')
       .attr('d', line);
+
+    // Create a time index indicator but leave it invisible for now.
+    svg.append('line')
+      .classed('time-index', true)
+      .attr('x1', x(this.timeIndex))
+      .attr('y1', 0)
+      .attr('x2', x(this.timeIndex))
+      .attr('y2', 512)
+      .attr('stroke', 'black')
+      .attr('stroke-width', 2)
+      .style('opacity', 0);
   }
 };
 

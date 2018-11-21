@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+
 import App from './App.vue';
 
 Vue.config.productionTip = false;
@@ -22,7 +23,9 @@ async function main () {
       rois: [],
       dff: [],
       epochs: [],
-      focus: null
+      focus: null,
+      timeIndex: 0,
+      mode: 'selection'
     },
     mutations: {
       setData (state, { which, data }) {
@@ -36,6 +39,14 @@ async function main () {
 
       focus (state, which) {
         state.focus = which;
+      },
+
+      mode (state, mode) {
+        state.mode = mode;
+      },
+
+      timeIndex (state, val) {
+        state.timeIndex = val;
       }
     }
   });

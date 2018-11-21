@@ -5,7 +5,10 @@
 </template>
 
 <script>
+import { scalePow } from 'd3-scale';
+
 import CanvasImage from './CanvasImage';
+import { minmax } from '@/util';
 
 export default {
   name: 'ROIPlot',
@@ -22,28 +25,48 @@ export default {
       return this.$store.state.rois;
     },
 
+    dff () {
+      return this.$store.state.dff;
+    },
+
+    dffRange () {
+      const dff = this.dff;
+      return minmax(dff);
+    },
+
+    timeIndex () {
+      return this.$store.state.timeIndex;
+    },
+
     focus () {
       return this.$store.state.focus;
+    },
+
+    mode () {
+      return this.$store.state.mode;
     }
   },
   watch: {
-    focus: function (newFocus, oldFocus) {
-      if (oldFocus !== null) {
-        this.drawROI(oldFocus, {
-          r: 100,
-          g: 100,
-          b: 100
-        });
+    focus (newFocus, oldFocus) {
+      this.setFocus(newFocus, oldFocus);
+    },
+
+    mode (mode) {
+      this.img.clear(0, 0, 0, 255);
+
+      if (mode === 'selection') {
+        this.setFocus(this.focus, null);
+        this.drawSelectionROIs();
+      } else {
+        this.setFocus(null, this.focus);
+        this.drawIntensityROIs();
       }
 
-      if (newFocus !== null) {
-        this.drawROI(newFocus, {
-          r: 0,
-          g: 255,
-          b: 0
-        });
-      }
+      this.img.update();
+    },
 
+    timeIndex () {
+      this.drawIntensityROIs();
       this.img.update();
     }
   },
@@ -57,14 +80,15 @@ export default {
     });
 
     this.img.clear(0, 0, 0, 255);
-
-    const rois = this.rois;
-    for (let i = 0; i < rois.length; i++) {
-      const color = i < 50 ? { r: 100, g: 100, b: 100 } : { r: 50, g: 50, b: 50 };
-      this.drawROI(i, color, false);
-    }
+    this.drawSelectionROIs();
 
     this.img.update();
+
+    const range = this.dffRange;
+    this.intensity = scalePow()
+      .domain(range)
+      .range([0, 255])
+      .exponent(0.4);
   },
 
   methods: {
@@ -85,26 +109,69 @@ export default {
       }
     },
 
-    click () {
-      // Time out here to give canvas element a chance to pick up the mouse
-      // click and record its coordinates.
-      window.setTimeout(() => {
-        const mouse = this.img.click;
+    drawSelectionROIs () {
+      const rois = this.rois;
+      for (let i = 0; i < rois.length; i++) {
+        const color = i < 50 ? { r: 100, g: 100, b: 100 } : { r: 50, g: 50, b: 50 };
+        this.drawROI(i, color, false);
+      }
+    },
 
-        // Find a match.
-        const rois = this.rois;
-        let i;
+    drawIntensityROIs () {
+      const dff = this.dff;
+      const timeIndex = this.timeIndex;
+      for (let i = 0; i < 50; i++) {
+        const color = this.intensity(dff[i][timeIndex]);
+        this.drawROI(i, {
+          r: color,
+          g: color,
+          b: color
+        }, false);
+      }
+    },
+
+    setFocus (newFocus, oldFocus) {
+      if (oldFocus !== null) {
+        this.drawROI(oldFocus, {
+          r: 100,
+          g: 100,
+          b: 100
+        });
+      }
+
+      if (newFocus !== null) {
+        this.drawROI(newFocus, {
+          r: 0,
+          g: 255,
+          b: 0
+        });
+      }
+
+      this.img.update();
+    },
+
+    click () {
+      if (this.mode === 'selection') {
+        // Time out here to give canvas element a chance to pick up the mouse
+        // click and record its coordinates.
+        window.setTimeout(() => {
+          const mouse = this.img.click;
+
+          // Find a match.
+          const rois = this.rois;
+          let i;
 loop:
-        for (i = 0; i < rois.length; i++) {
-          for (let j = 0; j < rois[i].length; j++) {
-            if (rois[i][j][0] === mouse.x && rois[i][j][1] === mouse.y) {
-              break loop;
+          for (i = 0; i < rois.length; i++) {
+            for (let j = 0; j < rois[i].length; j++) {
+              if (rois[i][j][0] === mouse.x && rois[i][j][1] === mouse.y) {
+                break loop;
+              }
             }
           }
-        }
 
-        this.$store.commit('focus', i < 50 ? i : null);
-      }, 0);
+          this.$store.commit('focus', i < 50 ? i : null);
+        }, 0);
+      }
     }
   }
 }
