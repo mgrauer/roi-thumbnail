@@ -5,22 +5,12 @@
 </template>
 
 <script>
+import { minmax } from '@/util';
+
 import { select } from 'd3-selection';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemePastel1 } from 'd3-scale-chromatic';
 import { line as d3line } from 'd3-shape';
-
-// Compute the range of all Dff values.
-function minmax (data) {
-  // First compute the min/max of each sequence.
-  const minmaxes = data.map(d => [Math.min.apply(null, d), Math.max.apply(null, d)]);
-
-  // Then get the min-min and the max-max.
-  return [
-    Math.min.apply(null, minmaxes.map(d => d[0])),
-    Math.max.apply(null, minmaxes.map(d => d[1]))
-  ];
-}
 
 export default {
   name: 'DffPlot',
