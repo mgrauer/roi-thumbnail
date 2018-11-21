@@ -118,7 +118,6 @@ export default {
     },
 
     drawIntensityROIs () {
-      const rois = this.rois;
       const dff = this.dff;
       const timeIndex = this.timeIndex;
       for (let i = 0; i < 50; i++) {
