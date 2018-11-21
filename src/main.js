@@ -43,6 +43,10 @@ async function main () {
 
       mode (state, mode) {
         state.mode = mode;
+      },
+
+      timeIndex (state, val) {
+        state.timeIndex = val;
       }
     }
   });

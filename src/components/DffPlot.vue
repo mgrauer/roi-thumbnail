@@ -52,6 +52,9 @@ export default {
     },
     mode () {
       return this.$store.state.mode;
+    },
+    timeIndex () {
+      return this.$store.state.timeIndex;
     }
   },
   watch: {
@@ -69,14 +72,29 @@ export default {
         this.showTimeIndex();
         this.setFocus(null);
       }
+    },
+
+    timeIndex (idx) {
+      this.moveTimeIndex(idx);
     }
   },
   methods: {
     hideTimeIndex () {
-      console.log('hiding time index');
+      select(this.$el)
+        .select('line.time-index')
+        .style('opacity', 0);
     },
     showTimeIndex () {
-      console.log('showing time index');
+      select(this.$el)
+        .select('line.time-index')
+        .style('opacity', 1);
+    },
+    moveTimeIndex (idx) {
+      const x = this.x(idx);
+      select(this.$el)
+        .select('line.time-index')
+        .attr('x1', x)
+        .attr('x2', x);
     },
     setFocus (focus) {
       select(this.$el)
@@ -100,7 +118,7 @@ export default {
     const range = minmax(data);
 
     // Create scales for ploting the line charts.
-    const x = scaleLinear()
+    const x = this.x = scaleLinear()
       .domain([0, data[0].length])
       .range([0, 512]);
 
@@ -165,6 +183,17 @@ export default {
       .attr('stroke-width', 1.5)
       .attr('fill', 'none')
       .attr('d', line);
+
+    // Create a time index indicator but leave it invisible for now.
+    svg.append('line')
+      .classed('time-index', true)
+      .attr('x1', x(this.timeIndex))
+      .attr('y1', 0)
+      .attr('x2', x(this.timeIndex))
+      .attr('y2', 512)
+      .attr('stroke', 'black')
+      .attr('stroke-width', 2)
+      .style('opacity', 0);
   }
 };
 
