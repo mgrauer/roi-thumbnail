@@ -8,8 +8,6 @@
     <br>
     <input type="radio" id="time" value="time" v-model="mode">
     <label for="time">Time Mode</label>
-    <br>
-    <span> {{ mode }} </span>
 
   </div>
 </template>
@@ -26,7 +24,7 @@ export default {
   },
   watch: {
     mode: function (mode) {
-      console.log(mode);
+      this.$store.commit('mode', mode);
     }
   },
   data () {

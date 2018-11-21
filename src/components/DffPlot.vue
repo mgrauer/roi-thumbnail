@@ -49,10 +49,36 @@ export default {
       }
 
       return data;
+    },
+    mode () {
+      return this.$store.state.mode;
     }
   },
   watch: {
     focus (focus) {
+      this.setFocus(focus);
+    },
+
+    mode (mode) {
+      if (mode === 'selection') {
+        // Hide the time index and highlight whatever trace is currently focused.
+        this.hideTimeIndex();
+        this.setFocus(this.focus);
+      } else {
+        // Show the time index and turn off trace highlighting.
+        this.showTimeIndex();
+        this.setFocus(null);
+      }
+    }
+  },
+  methods: {
+    hideTimeIndex () {
+      console.log('hiding time index');
+    },
+    showTimeIndex () {
+      console.log('showing time index');
+    },
+    setFocus (focus) {
       select(this.$el)
         .selectAll('path')
         .each(function (d, i) {
@@ -114,7 +140,9 @@ export default {
       .classed('dff', true)
       .attr('transform', (d, i) => `translate(0, ${i * 512 / 50})`)
       .on('mouseover', function (d, i) {
-        that.$store.commit('focus', i);
+        if (that.mode === 'selection') {
+          that.$store.commit('focus', i);
+        }
       });
 
     // Create mouse target elements for interaction.
