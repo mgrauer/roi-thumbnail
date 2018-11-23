@@ -1,3 +1,0 @@
-dist/data/stim_epoch.json filter=lfs diff=lfs merge=lfs -text
-dist/data/dff.json filter=lfs diff=lfs merge=lfs -text
-dist/data/rois.json filter=lfs diff=lfs merge=lfs -text
